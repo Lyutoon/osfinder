@@ -1,29 +1,8 @@
-ALLOWED_IMPORTS = {
-    "math",
-    "time",
-    "datetime",
-    "pandas",
-    "scipy",
-    "numpy",
-    "matplotlib",
-    "plotly",
-    "seaborn",
-}
+import argparse
 
-import scipy
-import math
-import time
-import datetime
-import numpy 
-import matplotlib
-import plotly
-import pandas
-import seaborn
-
-module = 'pandas'
-
-def find_import_path(start_obj, target_attr):
-    stack = [(start_obj, module)]
+def find_import_path(package, target_attr):
+    exec(f'import {package}')
+    stack = [(eval(package), package)]
     trace = []
     while stack:
         current_obj, import_path = stack.pop()
@@ -45,5 +24,14 @@ def find_import_path(start_obj, target_attr):
 
     return None
 
-target_attr = 'os'
-import_path = find_import_path(eval(module), target_attr)
+def main(args):
+    package = args.package
+    target_attr = args.target
+    import_path = find_import_path(package, target_attr)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--package', help='third party package', type=str)
+    parser.add_argument('--target', help='target, default to be os', type=str, default='os')
+    args = parser.parse_args()
+    main(args)
